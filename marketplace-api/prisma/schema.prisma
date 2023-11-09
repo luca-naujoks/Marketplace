@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Orders {
+  id    Int      @id @default(autoincrement())
+  account  Int
+  date  DateTime
+  items Json[]
+}
+
+model Products {
+  id            Int    @id @default(autoincrement())
+  name          String
+  stock         Int
+  delivery_time Int
+  discount      Int
+  price         Int
+  description   String
+  rating        Int
+  type          String @default("product")
+  brand_id      Int
+  special_sale  Int
+  tags          Json[]
+}
+
+model Accounts {
+  id            Int  @id @default(autoincrement())
+  type          String?                               // private or business account
+  email         String @unique                        // E-Mail Adress
+  password      String                                // Password
+  first_name    String?                               // First Name or Business owner/user Name
+  last_name     String?                               // Last Name or Business owner/user Name
+  adress        String?                               // Personal Adress or Business Adress (office or smth)
+  zip           Int?                                  // Adress Zip Code
+  verified      Boolean?                              // Email Verificated true/false
+
+  // Only Business Accounts
+  company_name  String?                               // Company Name
+  company_type  String?                               // Company Type (AG, GmbH ...)
+  owned_items   Json[]                                // Owned Items (Online, Offline, Instock or Out of Stock every thing)
+}

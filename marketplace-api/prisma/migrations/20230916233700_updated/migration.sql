@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Products" ADD COLUMN     "brand_id" INTEGER NOT NULL DEFAULT 1,
+ADD COLUMN     "special_sale" INTEGER NOT NULL DEFAULT 0;
