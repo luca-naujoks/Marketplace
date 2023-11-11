@@ -1,7 +1,8 @@
 import Cookies from "js-cookie";
 import jwtDecode, { JwtPayload } from "jwt-decode";
 import { useEffect, useState } from "react";
-require('dotenv').config();
+import { useCreate } from "../components/auth.component";
+import { env } from "../env"
 
 interface AccountJwtPayload extends JwtPayload {
   company_id: number;
@@ -25,7 +26,7 @@ function getaccountdata() {
   }
 
   const payload = jwtDecode<AccountJwtPayload>(jwt);
-
+  
   return payload;
 }
 
@@ -40,10 +41,14 @@ export function CompanyData() {
 
   const [isreadOnly, setIsReadOnly] = useState(true);
 
-  const toggleReadOnly = () => {
-    let url = "http://localhost:3000/accounts";
-    
-    const data = {
+  const refreshPage = () => {
+    window.location.reload();
+  };
+
+  const toggleReadOnly = async() => {
+    let url = `${env.API_URL}accounts`;
+
+    const request_data = {
       where: { id: accountdata.company_id },
       data: {
         first_name: first_name,
@@ -53,20 +58,25 @@ export function CompanyData() {
         zip: zip,
       },
     };
-    console.log(Cookies.get("auth"))
     setIsReadOnly(!isreadOnly);
     if (!isreadOnly) {
 
 
-      fetch(url, {
+      const response = await fetch(url, {
         method: "PUT",
         headers: {
           'Content-Type': 'application/json',
 
           Authorization: `Bearer ${Cookies.get("auth")}`,
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(request_data)
       })
+
+      const data = await response.json();
+      if(data.statusCode === 200) {
+        useCreate(data.access_token)
+        refreshPage()
+      }
     }
   };
 
@@ -180,21 +190,61 @@ export function CompanyData() {
 }
 
 export function OwnedProducts() {
-  return <div></div>;
+
+  const [items, setItems] = useState([])
+
+  async function getproducts() {
+    let url = `http://localhost:3000/products?brandid=${accountdata.company_id}`
+
+    fetch(url)
+    .then((response) => response.json())
+    .then((data) => setItems(data));
+  }
+
+  useEffect(() => {
+    getproducts();
+  })
+
+  return <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
+    <div className="mb-5">
+      <h1 className="text-xl font-bold">Company Owned Products</h1>
+
+    </div>
+  </div>;
 }
 
 export function CompanyOrders() {
-  return <div></div>;
+  return <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
+    <div className="mb-5">
+      <h1 className="text-xl font-bold">Ordered Products</h1>
+      
+    </div>
+  </div>;
 }
 
 export function ProductOrders() {
-  return <div></div>;
+  return <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
+    <div className="mb-5">
+      <h1 className="text-xl font-bold">Product Orders</h1>
+      
+    </div>
+  </div>;
 }
 
 export function Payments() {
-  return <div></div>;
+  return <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
+    <div className="mb-5">
+      <h1 className="text-xl font-bold">Payment methods</h1>
+      
+    </div>
+  </div>;
 }
 
 export function CustomerSupport() {
-  return <div></div>;
+  return <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
+    <div className="mb-5">
+      <h1 className="text-xl font-bold">Customer Support</h1>
+      
+    </div>
+  </div>;
 }

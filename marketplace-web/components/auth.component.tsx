@@ -26,9 +26,11 @@ export function useSession() {
   return null;
 }
 
-export function useCreate(tokenObject: string, isAuthenticated: boolean) {
+export function useCreate(tokenObject: string) {
 
-  if (isAuthenticated) {
+  
+
+  if (ClientCookies.get('auth') !== undefined) {
     console.log("auth " + tokenObject)
     ClientCookies.remove('auth')
     ClientCookies.set('auth', tokenObject)

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Popup } from "../../../../components/popup.component";
+import { env } from "../../../../env"
 
 export default function Page() {
   const [email, setEmail] = useState("");
@@ -25,7 +26,7 @@ export default function Page() {
   const handleSubmit = async (event: any) => {
     event.preventDefault();
 
-    let url = "http://localhost:3000/accounts/forgot-password";
+    let url = `${env.API_URL}accounts/forgot-password`;
 
     setEmail("");
 

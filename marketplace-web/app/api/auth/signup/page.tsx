@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Popup } from "../../../../components/popup.component";
 import { useAuthentication, useCreate } from "../../../../components/auth.component";
+import { env } from "../../../../env"
 
 export default function Page() {
   const [first_name, setFirst_Name] = useState("");
@@ -40,7 +41,7 @@ export default function Page() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    let url = "http://localhost:3000/accounts";
+    let url = `${env.API_URL}accounts`;
 
     if (password !== verifypassword) {
       handlePopupInfo("warning", "Your passwords do not match", 3);

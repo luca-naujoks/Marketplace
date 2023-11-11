@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useAuthentication, useCreate } from "../../../../components/auth.component";
-import { Popup } from "../../../../components/popup.component";
+import { Popup } from "../../../../components/popup.component"
+import { env } from "../../../../env"
 
 export default function Page() {
   const [email, setEmail] = useState("");
@@ -25,7 +26,7 @@ export default function Page() {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-    let url = "http://localhost:3000/auth/login";
+    let url = `${env.API_URL}auth/login`;
 
     const response = await fetch(url, {
       method: "POST",

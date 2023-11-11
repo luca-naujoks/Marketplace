@@ -1,6 +1,5 @@
 "use client";
-
-import { useAuthentication, useSession } from "../../components/auth.component";
+import { useSession } from "../../components/auth.component";
 import { LogOutButton } from "../../components/buttons.component";
 import {
   CompanyData,
@@ -196,31 +195,26 @@ export default function Page() {
               )}
               {selectedSection === "Owned Products" && (
                 <div className="flex flex-col w-full h-full">
-                  <h1 className="text-center">Owned Products</h1>
                   <OwnedProducts />
                 </div>
               )}
               {selectedSection === "Company Orders" && (
                 <div className="flex flex-col w-full h-full">
-                  <h1 className="text-center">Company Orders</h1>
                   <CompanyOrders />
                 </div>
               )}
               {selectedSection === "Product Orders" && (
                 <div className="flex flex-col w-full h-full">
-                  <h1 className="text-center">Product Orders</h1>
                   <ProductOrders />
                 </div>
               )}
               {selectedSection === "Payments" && (
                 <div className="flex flex-col w-full h-full">
-                  <h1 className="text-center">Payments</h1>
                   <Payments />
                 </div>
               )}
               {selectedSection === "Customer Support" && (
                 <div className="flex flex-col w-full h-full">
-                  <h1 className="text-center">Customer Support</h1>
                   <CustomerSupport />
                 </div>
               )}

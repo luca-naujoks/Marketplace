@@ -1,6 +1,8 @@
 {
   "name": "marketplace-web",
   "version": "0.1.0",
+  "description": "main marketplace folder",
+  "author": "bobby68",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",

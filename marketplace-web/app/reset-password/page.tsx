@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Popup } from "../../components/popup.component";
+import { env } from "../../env"
 
 export default function Page() {
   const [password, setPassword] = useState("");
@@ -26,7 +27,7 @@ export default function Page() {
   };
 
   const handleSubmit = async() => {
-    let url = "http://localhost:3000/accounts/reset-password"
+    let url = `${env.API_URL}accounts/reset-password`
     const newPassword = password
     if (password !== verifypassword) {
         handlePopupInfo("warning", "password & verify password does not match", 3)

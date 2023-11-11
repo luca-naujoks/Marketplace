@@ -6,6 +6,7 @@ import {
   useAuthentication,
   useCreate,
 } from "../../../../../components/auth.component";
+import { env } from "../../../../../env"
 
 export default function Page() {
   const [first_name, setFirst_Name] = useState("");
@@ -45,7 +46,7 @@ export default function Page() {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-    let url = "http://localhost:3000/accounts";
+    let url = `${env.API_URL}accounts`;
 
     if (password !== verifypassword) {
       return;

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import { ProductCard } from "../components/product.component";
+import { env } from "../env"
+require('dotenv').config;
 
 export default function Home() {
   const [items, setItems] = useState([]);
@@ -35,7 +36,7 @@ export default function Home() {
 
   const fetch_products = () => {
     let queryParams = new URLSearchParams(window.location.search);
-    let url = "http://localhost:3000/products";
+    let url = `${env.API_URL}products`;
 
     if (queryParams.toString()) {
       url += `?${queryParams.toString()}`;
@@ -49,7 +50,7 @@ export default function Home() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const fetch_businessaccounts = () => {
-        fetch("http://localhost:3000/accounts/business")
+        fetch(`${env.API_URL}accounts/business`)
           .then((response) => response.json())
           .then((data) => setBrands(data));
       };
