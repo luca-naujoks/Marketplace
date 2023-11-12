@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { env } from "../env"
-require('dotenv').config;
 
 export default function Home() {
   const [items, setItems] = useState([]);

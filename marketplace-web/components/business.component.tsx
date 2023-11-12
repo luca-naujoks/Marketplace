@@ -2,7 +2,7 @@ import Cookies from "js-cookie";
 import jwtDecode, { JwtPayload } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { useCreate } from "../components/auth.component";
-import { env } from "../env"
+import { env } from "../env";
 
 interface AccountJwtPayload extends JwtPayload {
   company_id: number;
@@ -26,7 +26,7 @@ function getaccountdata() {
   }
 
   const payload = jwtDecode<AccountJwtPayload>(jwt);
-  
+
   return payload;
 }
 
@@ -45,7 +45,7 @@ export function CompanyData() {
     window.location.reload();
   };
 
-  const toggleReadOnly = async() => {
+  const toggleReadOnly = async () => {
     let url = `${env.API_URL}accounts`;
 
     const request_data = {
@@ -60,22 +60,20 @@ export function CompanyData() {
     };
     setIsReadOnly(!isreadOnly);
     if (!isreadOnly) {
-
-
       const response = await fetch(url, {
         method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
 
           Authorization: `Bearer ${Cookies.get("auth")}`,
         },
-        body: JSON.stringify(request_data)
-      })
+        body: JSON.stringify(request_data),
+      });
 
       const data = await response.json();
-      if(data.statusCode === 200) {
-        useCreate(data.access_token)
-        refreshPage()
+      if (data.statusCode === 200) {
+        useCreate(data.access_token);
+        refreshPage();
       }
     }
   };
@@ -117,7 +115,15 @@ export function CompanyData() {
         <div className="flex justify-between">
           <h1 className="text-xl font-bold">Contact Data</h1>
           <button onClick={toggleReadOnly}>
-            {isreadOnly ? <img src="/assets/edit_pen.svg" alt="edit" className="w-6 h-6" />: <img src="/assets/check_mark.svg" alt="save" className="w-6 h-6" />}
+            {isreadOnly ? (
+              <img src="/assets/edit_pen.svg" alt="edit" className="w-6 h-6" />
+            ) : (
+              <img
+                src="/assets/check_mark.svg"
+                alt="save"
+                className="w-6 h-6"
+              />
+            )}
           </button>
         </div>
         <div className="flex">
@@ -190,61 +196,177 @@ export function CompanyData() {
 }
 
 export function OwnedProducts() {
-
-  const [items, setItems] = useState([])
+  const [items, setItems] = useState([]);
+  const [start, setStart] = useState(0);
 
   async function getproducts() {
-    let url = `http://localhost:3000/products?brandid=${accountdata.company_id}`
+    let url = `${env.API_URL}products?brandid=${accountdata.company_id}`;
 
     fetch(url)
-    .then((response) => response.json())
-    .then((data) => setItems(data));
+      .then((response) => response.json())
+      .then((data) => setItems(data));
   }
 
   useEffect(() => {
     getproducts();
-  })
+  });
 
-  return <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
-    <div className="mb-5">
-      <h1 className="text-xl font-bold">Company Owned Products</h1>
+  const handlePrev = () => {
+    setStart((oldStart) => (oldStart === 0 ? items.length - 3 : oldStart - 1));
+  };
 
+  const handleNext = () => {
+    setStart((oldStart) => (oldStart === items.length - 3 ? 0 : oldStart + 1));
+  };
+
+  const displayItems = items.slice(start, start + 3);
+
+  const listedItems = items.filter((item) => item.status === "listed");
+
+  const nonlistedItems = items.filter((item) => item.status === "non-listed");
+
+  return (
+    <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
+      <div className="mb-5">
+        <h1 className="text-xl font-bold mb-5">Company Owned Products</h1>
+
+        <div className="w-1/3 ml-2 mb-5">
+          <p className="block mb-1">Listed products</p>
+          <input
+            className="w-full border border-gray-300 rounded-md p-2 mb-4 outline-none bg-transparent"
+            type="text"
+            id="company_Name"
+            value={listedItems.length}
+            readOnly
+          />
+          <p className="block mb-1">Non-listed products</p>
+          <input
+            className="w-full border border-gray-300 rounded-md p-2 mb-4 outline-none bg-transparent"
+            type="text"
+            id="company_Name"
+            value={listedItems.length}
+            readOnly
+          />
+        </div>
+
+        <div className="flex items-center">
+          <button
+            onClick={handlePrev}
+            className={`text-3xl rounded-md p-5 duration-300 ${
+              items.length <= 3 ? "" : "hover:bg-black hover:text-white"
+            }`}
+            disabled={items.length <= 3}
+          >
+            ❮
+          </button>
+          <div className="grid grid-cols-3 gap-5 mx-2 flex-grow transition-all duration-500 ease-in-out">
+            {displayItems.map((item, index) => (
+              <div
+                key={index}
+                className="p-2 border-2 rounded-md border-black hover:scale-105 transition-all duration-500 ease-in-out"
+              >
+                <label>Status: </label>
+                <label
+                  className={
+                    item.status === "listed" ? "text-green-500" : "text-red-500"
+                  }
+                >
+                  {item.status}
+                </label>
+                <div className="flex justify-center">
+                  <img
+                    src="assets/Example_Product.png"
+                    alt={"picture " + item.id}
+                    className="max-w-full max-h-32"
+                  />
+                </div>
+                <div className="flex mx-5 mt-5 flex-col">
+                  <p className="mb-2">{item.name}</p>
+                  <p className="pr-2">Price: {item.price}€</p>
+                  <p>
+                    Delivery in:{" "}
+                    {item.delivery_time >= 7
+                      ? Math.floor(item.delivery_time / 7) + " weeks"
+                      : item.delivery_time + " days"}
+                  </p>
+                  <span>Rating: {Array(item.rating).fill("★").join("")}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={handleNext}
+            className={`text-3xl rounded-md p-5 duration-300 ${
+              items.length <= 3 ? "" : "hover:bg-black hover:text-white"
+            }`}
+            disabled={items.length <= 3}
+          >
+            ❯
+          </button>
+        </div>
+      </div>
     </div>
-  </div>;
+  );
 }
 
 export function CompanyOrders() {
-  return <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
-    <div className="mb-5">
-      <h1 className="text-xl font-bold">Ordered Products</h1>
-      
+  return (
+    <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
+      <div className="mb-5">
+        <h1 className="text-xl font-bold">Company Ordered Products</h1>
+      </div>
     </div>
-  </div>;
+  );
 }
 
 export function ProductOrders() {
-  return <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
-    <div className="mb-5">
-      <h1 className="text-xl font-bold">Product Orders</h1>
-      
+  return (
+    <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
+      <div className="mb-5">
+        <h1 className="text-xl font-bold">Product Orders</h1>
+      </div>
     </div>
-  </div>;
+  );
 }
 
 export function Payments() {
-  return <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
-    <div className="mb-5">
-      <h1 className="text-xl font-bold">Payment methods</h1>
-      
+  const payments = [    {
+    "provider": "Visa",
+    "card_number": 5790,
+    "card_holder_name": "Bobby Business",
+    "expires": "Jun/2031",
+},
+{
+  "provider": "Visa",
+  "card_number": 5081,
+  "card_holder_name": "Bobby Business 2",
+  "expires": "Jul/2029",
+}]
+
+  return (
+
+    <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
+      <div className="mb-5">
+        <h1 className="text-xl font-bold">Payment methods</h1>
+          {payments.map(payment => (
+            <div>
+              <hr />
+              <p>{payment.provider}</p>
+              <hr />
+            </div>
+          ))}
+        <h1 className="text-xl font-bold">Billings</h1>
+      </div>
     </div>
-  </div>;
+  );
 }
 
 export function CustomerSupport() {
-  return <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
-    <div className="mb-5">
-      <h1 className="text-xl font-bold">Customer Support</h1>
-      
+  return (
+    <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
+      <div className="mb-5">
+        <h1 className="text-xl font-bold">Customer Support</h1>
+      </div>
     </div>
-  </div>;
+  );
 }

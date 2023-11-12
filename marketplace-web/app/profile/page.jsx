@@ -194,27 +194,27 @@ export default function Page() {
                 </div>
               )}
               {selectedSection === "Owned Products" && (
-                <div className="flex flex-col w-full h-full">
+                <div className="flex flex-col w-full h-full items-center">
                   <OwnedProducts />
                 </div>
               )}
               {selectedSection === "Company Orders" && (
-                <div className="flex flex-col w-full h-full">
+                <div className="flex flex-col w-full h-full items-center">
                   <CompanyOrders />
                 </div>
               )}
               {selectedSection === "Product Orders" && (
-                <div className="flex flex-col w-full h-full">
+                <div className="flex flex-col w-full h-full items-center">
                   <ProductOrders />
                 </div>
               )}
               {selectedSection === "Payments" && (
-                <div className="flex flex-col w-full h-full">
+                <div className="flex flex-col w-full h-full items-center">
                   <Payments />
                 </div>
               )}
               {selectedSection === "Customer Support" && (
-                <div className="flex flex-col w-full h-full">
+                <div className="flex flex-col w-full h-full items-center">
                   <CustomerSupport />
                 </div>
               )}
