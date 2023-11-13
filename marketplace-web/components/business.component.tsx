@@ -3,6 +3,7 @@ import jwtDecode, { JwtPayload } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { useCreate } from "../components/auth.component";
 import { env } from "../env";
+import { stringify } from "querystring";
 
 interface AccountJwtPayload extends JwtPayload {
   company_id: number;
@@ -263,7 +264,7 @@ export function OwnedProducts() {
             {displayItems.map((item, index) => (
               <div
                 key={index}
-                className="p-2 border-2 rounded-md border-black hover:scale-105 transition-all duration-500 ease-in-out"
+                className="p-2 border-2 rounded-md border-black hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer"
               >
                 <label>Status: </label>
                 <label
@@ -310,20 +311,151 @@ export function OwnedProducts() {
 }
 
 export function CompanyOrders() {
+
+  // collect from orders where buyerid === companyid
+  const orders = [
+    {
+      id: 1,
+      date: "01.01.2023",
+      items: [
+        {
+          id: 2,
+          name: "Test",
+          price: 10,
+        },
+        {
+          id: 2,
+          name: "Test",
+          price: 12,
+        },
+        {
+          id: 2,
+          name: "Test",
+          price: 13,
+        },
+      ],
+      buyerid: 4,
+      sellerid: 1,
+    },
+    {
+      id: 2,
+      date: "02.02.2023",
+      items: [
+        {
+          id: 2,
+          name: "Test 2",
+          price: 10,
+        },
+      ],
+      buyerid: 4,
+      sellerid: 1,
+    },
+  ];
+
   return (
     <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
       <div className="mb-5">
         <h1 className="text-xl font-bold">Company Ordered Products</h1>
+        {orders.map((order, index) => (
+          <div key={index} className="bg-white shadow-md rounded-md p-2 mb-2">
+            <div className="flex ">
+              <p className="mr-5">
+                <span className="font-semibold">Order ID: </span>
+                {order.id}{" "}
+              </p>
+              <p className="mr-5">
+                <span className="font-semibold">Order Date: </span>
+                {order.date}{" "}
+              </p>
+              <p className="mr-5">
+                <span className="font-semibold">Amount of Items: </span>
+                {order.items.length}{" "}
+              </p>
+              <p className="mr-5">
+                <span className="font-semibold">Costs: </span>
+                <span
+                  className={
+                    order.buyerid === 4 ? "text-red-500" : "text-green-500"
+                  }
+                >
+                  {order.buyerid === 4 ? "-" : "+"}
+                  {order.items.reduce((total, item) => total + item.price, 0)}€
+                </span>{" "}
+              </p>
+            </div>
+            {order.items.map((item) => (
+              <div>
+                <p><span className="mr-5">{item.id} </span><span className="mr-5">{item.name}</span> <span className="mr-5">{item.price}€</span></p>
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
 export function ProductOrders() {
+  // collect from orders where sellerid === companyid
+  const orders = [
+    {
+      id: 3,
+      date: "03.03.2023",
+      items: [
+        {
+          id: 2,
+          name: "Test 3",
+          price: 10,
+        },
+        {
+          id: 2,
+          name: "Test 3",
+          price: 12,
+        },
+      ],
+      buyerid: 1,
+      sellerid: 4,
+    },
+  ];
+
   return (
     <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
       <div className="mb-5">
         <h1 className="text-xl font-bold">Product Orders</h1>
+        {orders.map((order, index) => (
+          <div key={index} className="bg-white shadow-md rounded-md p-2 mb-2">
+            <div className="flex ">
+              <p className="mr-5">
+                <span className="font-semibold">Order ID: </span>
+                {order.id}{" "}
+              </p>
+              <p className="mr-5">
+                <span className="font-semibold">Order Date: </span>
+                {order.date}{" "}
+              </p>
+              <p className="mr-5">
+                <span className="font-semibold">Amount of Items: </span>
+                {order.items.length}{" "}
+              </p>
+              <p className="mr-5">
+                <span className="font-semibold">Costs: </span>
+                <span
+                  className={
+                    order.buyerid === 4 ? "text-red-500" : "text-green-500"
+                  }
+                >
+                  {order.buyerid === 4 ? "-" : "+"}
+                  {order.items.reduce((total, item) => total + item.price, 0)}€
+                </span>{" "}
+              </p>
+            </div>
+            {order.items.map((item) => (
+              <div>
+                <p><span className="mr-5">{item.id} </span><span className="mr-5">{item.name}</span> <span className="mr-5">{item.price}€</span></p>
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -344,60 +476,63 @@ export function Payments() {
       expires: "Jul/2029",
     },
   ];
-
+  // collect from orders where buyerid or sellerid === companyid
   const orders = [
     {
-      "id": 1,
-      "date": "01.01.2023",
-      "items": [
+      id: 1,
+      date: "01.01.2023",
+      items: [
         {
-          "id": 2,
-          "name": "Test",
-          "price": 10
+          id: 2,
+          name: "Test",
+          price: 10,
         },
         {
-          "id": 2,
-          "name": "Test",
-          "price": 12
+          id: 2,
+          name: "Test",
+          price: 12,
         },
         {
-          "id": 2,
-          "name": "Test",
-          "price": 13
-        }
+          id: 2,
+          name: "Test",
+          price: 13,
+        },
       ],
-      "account": 4
+      buyerid: 4,
+      sellerid: 1,
     },
     {
-      "id": 2,
-      "date": "02.02.2023",
-      "items": [
+      id: 2,
+      date: "02.02.2023",
+      items: [
         {
-          "id": 2,
-          "name": "Test 2",
-          "price": 10
-        }
+          id: 2,
+          name: "Test 2",
+          price: 10,
+        },
       ],
-      "account": 4
+      buyerid: 4,
+      sellerid: 1,
     },
     {
-      "id": 3,
-      "date": "03.03.2023",
-      "items": [
+      id: 3,
+      date: "03.03.2023",
+      items: [
         {
-          "id": 2,
-          "name": "Test 3",
-          "price": 10
+          id: 2,
+          name: "Test 3",
+          price: 10,
         },
         {
-          "id": 2,
-          "name": "Test 3",
-          "price": 12
+          id: 2,
+          name: "Test 3",
+          price: 12,
         },
       ],
-      "account": 1
-    }
-  ];  
+      buyerid: 1,
+      sellerid: 4,
+    },
+  ];
 
   return (
     <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
@@ -432,12 +567,33 @@ export function Payments() {
           </button>
         </div>
         <h1 className="text-xl font-bold mb-5">Billings</h1>
-        {orders.map((order) => (
-          <div className="flex bg-white shadow-md rounded-md p-2 mb-2 hover:scale-105 duration-300 cursor-pointer">
-            <p className="mr-5"><span className="font-semibold">Order ID: </span>{order.id} </p>
-            <p className="mr-5"><span className="font-semibold">Order Date: </span>{order.date} </p>
-            <p className="mr-5"><span className="font-semibold">Amount of Items: </span>{order.items.length} </p>
-            <p className="mr-5"><span className="font-semibold">Costs: </span><span className={order.account === 4? "text-red-500": "text-green-500"}>{order.account === 4? "-": "+"}{order.items.reduce((total, item) => total + item.price, 0)}€</span> </p>
+        {orders.map((order, index) => (
+          <div key={index} className="bg-white shadow-md rounded-md p-2 mb-2">
+            <div className="flex ">
+              <p className="mr-5">
+                <span className="font-semibold">Order ID: </span>
+                {order.id}{" "}
+              </p>
+              <p className="mr-5">
+                <span className="font-semibold">Order Date: </span>
+                {order.date}{" "}
+              </p>
+              <p className="mr-5">
+                <span className="font-semibold">Amount of Items: </span>
+                {order.items.length}{" "}
+              </p>
+              <p className="mr-5">
+                <span className="font-semibold">Costs: </span>
+                <span
+                  className={
+                    order.buyerid === 4 ? "text-red-500" : "text-green-500"
+                  }
+                >
+                  {order.buyerid === 4 ? "-" : "+"}
+                  {order.items.reduce((total, item) => total + item.price, 0)}€
+                </span>{" "}
+              </p>
+            </div>
           </div>
         ))}
       </div>
