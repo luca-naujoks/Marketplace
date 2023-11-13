@@ -5,7 +5,10 @@
     "author": "bobby68",
     "private": true,
     "scripts": {
-      "api": "npm --prefix ./marketplace-api run start:dev",
-      "web": "npm --prefix ./marketplace-web run dev"
+      "dev:api": "npm --prefix ./marketplace-api run start:dev",
+      "dev:web": "npm --prefix ./marketplace-web run dev",
+      "build": "cd ./marketplace-api && npm run build && cd .. && cd ./marketplace-web && npm run build",
+      "start:api": "npm --prefix ./marketplace-api run start:dev",
+      "start:web": "npm --prefix ./marketplace-web run start"
     }
   }

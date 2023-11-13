@@ -244,7 +244,7 @@ export function OwnedProducts() {
             className="w-full border border-gray-300 rounded-md p-2 mb-4 outline-none bg-transparent"
             type="text"
             id="company_Name"
-            value={listedItems.length}
+            value={nonlistedItems.length}
             readOnly
           />
         </div>
@@ -330,32 +330,116 @@ export function ProductOrders() {
 }
 
 export function Payments() {
-  const payments = [    {
-    "provider": "Visa",
-    "card_number": 5790,
-    "card_holder_name": "Bobby Business",
-    "expires": "Jun/2031",
-},
-{
-  "provider": "Visa",
-  "card_number": 5081,
-  "card_holder_name": "Bobby Business 2",
-  "expires": "Jul/2029",
-}]
+  const payments = [
+    {
+      provider: "Visa",
+      card_number: 5790,
+      card_holder_name: "Bobby Business",
+      expires: "Jun/2031",
+    },
+    {
+      provider: "Mastercard",
+      card_number: 5081,
+      card_holder_name: "Bobby Business Mastercard",
+      expires: "Jul/2029",
+    },
+  ];
+
+  const orders = [
+    {
+      "id": 1,
+      "date": "01.01.2023",
+      "items": [
+        {
+          "id": 2,
+          "name": "Test",
+          "price": 10
+        },
+        {
+          "id": 2,
+          "name": "Test",
+          "price": 12
+        },
+        {
+          "id": 2,
+          "name": "Test",
+          "price": 13
+        }
+      ],
+      "account": 4
+    },
+    {
+      "id": 2,
+      "date": "02.02.2023",
+      "items": [
+        {
+          "id": 2,
+          "name": "Test 2",
+          "price": 10
+        }
+      ],
+      "account": 4
+    },
+    {
+      "id": 3,
+      "date": "03.03.2023",
+      "items": [
+        {
+          "id": 2,
+          "name": "Test 3",
+          "price": 10
+        },
+        {
+          "id": 2,
+          "name": "Test 3",
+          "price": 12
+        },
+      ],
+      "account": 1
+    }
+  ];  
 
   return (
-
     <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
-      <div className="mb-5">
-        <h1 className="text-xl font-bold">Payment methods</h1>
-          {payments.map(payment => (
-            <div>
-              <hr />
-              <p>{payment.provider}</p>
-              <hr />
+      <div className="w-full mb-5">
+        <h1 className="text-xl font-bold pb-5">Payment methods</h1>
+        {payments.length > 0 ? (
+          payments.map((payment) => (
+            <div className="bg-white shadow-md rounded-md p-2 mb-2 hover:scale-105 duration-300 cursor-pointer">
+              <p>
+                <span className="font-bold">{payment.provider}</span>, Ending
+                with: <span className="font-bold">{payment.card_number}</span>
+                <button className="float-right hover:font-semibold">
+                  Edit
+                </button>
+              </p>
+              <p>
+                Expires on: <span className="font-bold">{payment.expires}</span>
+              </p>
             </div>
-          ))}
-        <h1 className="text-xl font-bold">Billings</h1>
+          ))
+        ) : (
+          <div className="bg-white shadow-md rounded-md p-2 mb-2 hover:scale-105 duration-300 cursor-pointer">
+            <p>We found no payment methods registered on your account.</p>
+            <p>
+              Register a new one by clicking on the 'Add payment method' button
+            </p>
+          </div>
+        )}
+        <div className="flex justify-end w-full mt-5">
+          <button className="p-1 rounded-md bg-gray-500 text-white hover:bg-gray-600">
+            Add payment
+          </button>
+        </div>
+        <h1 className="text-xl font-bold mb-5">Billings</h1>
+        {orders.map((order) => (
+          <div className="flex bg-white shadow-md rounded-md p-2 mb-2 hover:scale-105 duration-300 cursor-pointer">
+            <p className="mr-5"><span className="font-semibold">Order ID: </span>{order.id} </p>
+            <p className="mr-5"><span className="font-semibold">Order Date: </span>{order.date} </p>
+            <p className="mr-5"><span className="font-semibold">Amount of Items: </span>{order.items.length} </p>
+            <p className="mr-5"><span className="font-semibold">Costs: </span><span className={order.account === 4? "text-red-500": "text-green-500"}>{order.account === 4? "-": "+"}{order.items.reduce((total, item) => total + item.price, 0)}€</span> </p>
+          </div>
+        ))}
       </div>
     </div>
   );

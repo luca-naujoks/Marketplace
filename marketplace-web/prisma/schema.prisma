@@ -54,5 +54,5 @@ model Payments {
   card_number               BigInt
   cvc                       Int
   card_holder_name          String
-  expires                   Int
+  expires                   String
 }
