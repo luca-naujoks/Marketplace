@@ -9,6 +9,12 @@ import {
   Payments,
   CustomerSupport,
 } from "../../components/business.component";
+import {
+  PersonalData,
+  MarketplacePrime,
+  Orders,
+  Subscriptions
+} from "../../components/private.component"
 import { useState } from "react";
 
 export default function Page() {
@@ -49,7 +55,19 @@ export default function Page() {
                       : "text-gray-600"
                   }`}
                 >
-                  Marketplace Prime Card
+                  Marketplace Prime
+                </a>
+              </li>
+              <li className="m-2">
+                <a
+                  onClick={() => handleLinkClick("Payments")}
+                  className={`text-lg font-bold cursor-pointer ${
+                    selectedSection === "Payments"
+                      ? "text-black"
+                      : "text-gray-600"
+                  }`}
+                >
+                  Payments
                 </a>
               </li>
               <li className="m-2">
@@ -77,25 +95,26 @@ export default function Page() {
                 </a>
               </li>
               <li className="m-2">
-                <a
-                  href="/api/auth/resetpassword"
-                  className={`text-lg font-bold cursor-pointer ${
-                    selectedSection === "" ? "text-black" : "text-gray-600"
-                  }`}
-                >
-                  Reset Password
-                </a>
-              </li>
-              <li className="m-2">
                 <LogOutButton />
               </li>
             </ul>
           </div>
           <div className="flex justify-center w-full">
-            {selectedSection === "Personal Data" && <div>Personal Data</div>}
-            {selectedSection === "Prime Card" && <div>Prime Card</div>}
-            {selectedSection === "Orders" && <div>Orders</div>}
-            {selectedSection === "Subscriptions" && <div>Subscriptions</div>}
+            {selectedSection === "Personal Data" && <div className="flex flex-col w-full h-full items-center">
+                  <PersonalData />
+                </div>}
+                {selectedSection === "Payments" && <div className="flex flex-col w-full h-full items-center">
+                  <Payments />
+                </div>}
+            {selectedSection === "Prime Card" && <div className="flex flex-col w-full h-full items-center">
+                  <MarketplacePrime />
+                </div>}
+            {selectedSection === "Orders" && <div className="flex flex-col w-full h-full items-center">
+                  <Orders />
+                </div>}
+            {selectedSection === "Subscriptions" && <div className="flex flex-col w-full h-full items-center">
+                  <Subscriptions />
+                </div>}
           </div>
         </div>
       </div>

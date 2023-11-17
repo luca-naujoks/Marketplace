@@ -168,13 +168,13 @@ export default function Page() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <div className="flex justify-between">
+              <div className="3xl:flex justify-between">
                 <div>
                   <label className="block mb-1" htmlFor="ZIP">
                     ZIP Code
                   </label>
                   <input
-                    className="w-4/5 border border-gray-300 rounded-md p-2 mb-4"
+                    className="border border-gray-300 rounded-md p-2 mb-4"
                     type="number"
                     id="ZIP"
                     placeholder="ZIP Code"
@@ -187,7 +187,7 @@ export default function Page() {
                     Adress
                   </label>
                   <input
-                    className="w-auto border border-gray-300 rounded-md p-2 mb-4"
+                    className="border border-gray-300 rounded-md p-2 mb-4"
                     type="text"
                     id="adress"
                     placeholder="Enter your adress"

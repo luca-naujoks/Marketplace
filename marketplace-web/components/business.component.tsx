@@ -1,9 +1,8 @@
 import Cookies from "js-cookie";
 import jwtDecode, { JwtPayload } from "jwt-decode";
 import { useEffect, useState } from "react";
-import { useCreate } from "../components/auth.component";
+import { useAuthentication, useCreate } from "../components/auth.component";
 import { env } from "../env";
-import { stringify } from "querystring";
 
 interface AccountJwtPayload extends JwtPayload {
   company_id: number;
@@ -311,7 +310,6 @@ export function OwnedProducts() {
 }
 
 export function CompanyOrders() {
-
   // collect from orders where buyerid === companyid
   const orders = [
     {
@@ -322,16 +320,19 @@ export function CompanyOrders() {
           id: 2,
           name: "Test",
           price: 10,
+          amount: 3,
         },
         {
           id: 2,
           name: "Test",
           price: 12,
+          amount: 2,
         },
         {
           id: 2,
           name: "Test",
           price: 13,
+          amount: 1,
         },
       ],
       buyerid: 4,
@@ -345,6 +346,7 @@ export function CompanyOrders() {
           id: 2,
           name: "Test 2",
           price: 10,
+          amount: 5,
         },
       ],
       buyerid: 4,
@@ -361,31 +363,35 @@ export function CompanyOrders() {
             <div className="flex ">
               <p className="mr-5">
                 <span className="font-semibold">Order ID: </span>
-                {order.id}{" "}
+                <span className="font-semibold">{order.id}</span>
               </p>
               <p className="mr-5">
                 <span className="font-semibold">Order Date: </span>
-                {order.date}{" "}
+                <span className="font-semibold">{order.date}</span>
               </p>
               <p className="mr-5">
                 <span className="font-semibold">Amount of Items: </span>
-                {order.items.length}{" "}
+                <span className="font-semibold">{order.items.length}</span>
               </p>
               <p className="mr-5">
-                <span className="font-semibold">Costs: </span>
-                <span
-                  className={
-                    order.buyerid === 4 ? "text-red-500" : "text-green-500"
-                  }
-                >
-                  {order.buyerid === 4 ? "-" : "+"}
-                  {order.items.reduce((total, item) => total + item.price, 0)}€
-                </span>{" "}
+                <span className="font-semibold">Total Costs: </span>
+                <span className="text-red-500 font-semibold">
+                  -
+                  {order.items.reduce(
+                    (total, item) => total + item.price * item.amount,
+                    0
+                  )}
+                  €
+                </span>
               </p>
             </div>
             {order.items.map((item) => (
               <div>
-                <p><span className="mr-5">{item.id} </span><span className="mr-5">{item.name}</span> <span className="mr-5">{item.price}€</span></p>
+                <p>
+                  <span className="mr-5">Product Name: {item.name}</span>{" "}
+                  <span className="mr-5">Cost per Item: {item.price}€</span>
+                  <span className="mr-5">Amount: {item.amount}</span>
+                </p>
               </div>
             ))}
           </div>
@@ -406,11 +412,13 @@ export function ProductOrders() {
           id: 2,
           name: "Test 3",
           price: 10,
+          amount: 2,
         },
         {
-          id: 2,
+          id: 12,
           name: "Test 3",
           price: 12,
+          amount: 1,
         },
       ],
       buyerid: 1,
@@ -427,31 +435,35 @@ export function ProductOrders() {
             <div className="flex ">
               <p className="mr-5">
                 <span className="font-semibold">Order ID: </span>
-                {order.id}{" "}
+                <span className="font-semibold">{order.id}</span>
               </p>
               <p className="mr-5">
                 <span className="font-semibold">Order Date: </span>
-                {order.date}{" "}
+                <span className="font-semibold">{order.date}</span>
               </p>
               <p className="mr-5">
                 <span className="font-semibold">Amount of Items: </span>
-                {order.items.length}{" "}
+                <span className="font-semibold">{order.items.length}</span>
               </p>
               <p className="mr-5">
-                <span className="font-semibold">Costs: </span>
-                <span
-                  className={
-                    order.buyerid === 4 ? "text-red-500" : "text-green-500"
-                  }
-                >
-                  {order.buyerid === 4 ? "-" : "+"}
-                  {order.items.reduce((total, item) => total + item.price, 0)}€
-                </span>{" "}
+                <span className="font-semibold">Total Costs: </span>
+                <span className="text-red-500 font-semibold">
+                  -
+                  {order.items.reduce(
+                    (total, item) => total + item.price * item.amount,
+                    0
+                  )}
+                  €
+                </span>
               </p>
             </div>
             {order.items.map((item) => (
               <div>
-                <p><span className="mr-5">{item.id} </span><span className="mr-5">{item.name}</span> <span className="mr-5">{item.price}€</span></p>
+                <p>
+                  <span className="mr-5">Product Name: {item.name}</span>
+                  <span className="mr-5">Cost per Item: {item.price}€</span>
+                  <span className="mr-5">Amount: {item.amount}</span>
+                </p>
               </div>
             ))}
           </div>

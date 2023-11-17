@@ -191,7 +191,7 @@ export default function Page() {
                 required
               />
 
-              <div className="flex justify-between">
+              <div className="3xl:flex justify-between">
                 <div>
                   <label className="block mb-1" htmlFor="ZIP">
                     ZIP Code
