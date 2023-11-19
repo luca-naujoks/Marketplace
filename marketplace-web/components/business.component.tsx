@@ -5,7 +5,7 @@ import { useAuthentication, useCreate } from "../components/auth.component";
 import { env } from "../env";
 
 interface AccountJwtPayload extends JwtPayload {
-  company_id: number;
+  account_id: number;
   company_name: string;
   company_type: string;
   first_name: string;
@@ -49,7 +49,7 @@ export function CompanyData() {
     let url = `${env.API_URL}accounts`;
 
     const request_data = {
-      where: { id: accountdata.company_id },
+      where: { id: accountdata.account_id },
       data: {
         first_name: first_name,
         last_name: last_name,
@@ -86,7 +86,7 @@ export function CompanyData() {
           <div className="flex flex-col mb-4">
             <p className="block mb-1">Company ID</p>
             <p className="border border-gray-300 rounded-md p-2">
-              {accountdata.company_id}
+              {accountdata.account_id}
             </p>
           </div>
         </div>
@@ -200,7 +200,7 @@ export function OwnedProducts() {
   const [start, setStart] = useState(0);
 
   async function getproducts() {
-    let url = `${env.API_URL}products?brandid=${accountdata.company_id}`;
+    let url = `${env.API_URL}products?brandid=${accountdata.account_id}`;
 
     fetch(url)
       .then((response) => response.json())
@@ -229,26 +229,34 @@ export function OwnedProducts() {
     <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
       <div className="mb-5">
         <h1 className="text-xl font-bold mb-5">Company Owned Products</h1>
-
-        <div className="w-1/3 ml-2 mb-5">
-          <p className="block mb-1">Listed products</p>
-          <input
-            className="w-full border border-gray-300 rounded-md p-2 mb-4 outline-none bg-transparent"
-            type="text"
-            id="company_Name"
-            value={listedItems.length}
-            readOnly
-          />
-          <p className="block mb-1">Non-listed products</p>
-          <input
-            className="w-full border border-gray-300 rounded-md p-2 mb-4 outline-none bg-transparent"
-            type="text"
-            id="company_Name"
-            value={nonlistedItems.length}
-            readOnly
-          />
+        <div className="flex">
+          <div className="w-1/3 ml-2 mb-5">
+            <p className="block mb-1">
+              <span className="text-green-500">Listed</span>
+              <span> products</span>
+            </p>
+            <input
+              className="w-full border border-gray-300 rounded-md p-2 mb-4 outline-none bg-transparent"
+              type="text"
+              id="company_Name"
+              value={listedItems.length}
+              readOnly
+            />
+          </div>
+          <div className="w-1/3 ml-2 mb-5">
+            <p className="block mb-1">
+              <span className="text-red-500">Non-listed</span>
+              <span> products</span>
+            </p>
+            <input
+              className="w-full border border-gray-300 rounded-md p-2 mb-4 outline-none bg-transparent"
+              type="text"
+              id="company_Name"
+              value={nonlistedItems.length}
+              readOnly
+            />
+          </div>
         </div>
-
         <div className="flex items-center">
           <button
             onClick={handlePrev}
@@ -310,241 +318,190 @@ export function OwnedProducts() {
 }
 
 export function CompanyOrders() {
-  // collect from orders where buyerid === companyid
-  const orders = [
-    {
-      id: 1,
-      date: "01.01.2023",
-      items: [
-        {
-          id: 2,
-          name: "Test",
-          price: 10,
-          amount: 3,
-        },
-        {
-          id: 2,
-          name: "Test",
-          price: 12,
-          amount: 2,
-        },
-        {
-          id: 2,
-          name: "Test",
-          price: 13,
-          amount: 1,
-        },
-      ],
-      buyerid: 4,
-      sellerid: 1,
-    },
-    {
-      id: 2,
-      date: "02.02.2023",
-      items: [
-        {
-          id: 2,
-          name: "Test 2",
-          price: 10,
-          amount: 5,
-        },
-      ],
-      buyerid: 4,
-      sellerid: 1,
-    },
-  ];
+  const [orders, setOrders] = useState([]);
+
+  async function getorders() {
+    let url = `${env.API_URL}orders?buyerId=${accountdata.account_id}`;
+
+    fetch(url, {
+      method: "Get",
+      headers: {
+        Authorization: `Bearer ${Cookies.get("auth")}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) =>
+        Array.isArray(data) ? setOrders(data) : setOrders([data])
+      );
+  }
+
+  useEffect(() => {
+    getorders();
+  });
 
   return (
     <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
       <div className="mb-5">
         <h1 className="text-xl font-bold">Company Ordered Products</h1>
-        {orders.map((order, index) => (
-          <div key={index} className="bg-white shadow-md rounded-md p-2 mb-2">
-            <div className="flex ">
-              <p className="mr-5">
-                <span className="font-semibold">Order ID: </span>
-                <span className="font-semibold">{order.id}</span>
-              </p>
-              <p className="mr-5">
-                <span className="font-semibold">Order Date: </span>
-                <span className="font-semibold">{order.date}</span>
-              </p>
-              <p className="mr-5">
-                <span className="font-semibold">Amount of Items: </span>
-                <span className="font-semibold">{order.items.length}</span>
-              </p>
-              <p className="mr-5">
-                <span className="font-semibold">Total Costs: </span>
-                <span className="text-red-500 font-semibold">
-                  -
-                  {order.items.reduce(
-                    (total, item) => total + item.price * item.amount,
-                    0
-                  )}
-                  €
-                </span>
-              </p>
-            </div>
-            {order.items.map((item) => (
-              <div>
-                <p>
-                  <span className="mr-5">Product Name: {item.name}</span>{" "}
-                  <span className="mr-5">Cost per Item: {item.price}€</span>
-                  <span className="mr-5">Amount: {item.amount}</span>
+        {orders.map((order, index) => {
+          let date = new Date(order.date);
+          let formattedDate = date.toISOString().substring(0, 10);
+          return (
+            <div key={index} className="bg-white shadow-md rounded-md p-2 mb-2">
+              <div className="flex ">
+                <p className="mr-5">
+                  <span className="font-semibold">Order ID: </span>
+                  <span className="font-semibold">{order.id}</span>
+                </p>
+                <p className="mr-5">
+                  <span className="font-semibold">Order Date: </span>
+                  <span className="font-semibold">{formattedDate}</span>
+                </p>
+                <p className="mr-5">
+                  <span className="font-semibold">Amount of Items: </span>
+                  <span className="font-semibold">{order.items.length}</span>
+                </p>
+                <p className="mr-5">
+                  <span className="font-semibold">Total Costs: </span>
+                  <span className="text-red-500 font-semibold">
+                    -
+                    {order.items.reduce(
+                      (total, item) => total + item.price * item.amount,
+                      0
+                    )}
+                    €
+                  </span>
                 </p>
               </div>
-            ))}
-          </div>
-        ))}
+              {order.items.map((item) => (
+                <div>
+                  <p>
+                    <span className="mr-5">Product Name: {item.name}</span>{" "}
+                    <span className="mr-5">Cost per Item: {item.price}€</span>
+                    <span className="mr-5">Amount: {item.amount}</span>
+                  </p>
+                </div>
+              ))}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 }
 
 export function ProductOrders() {
-  // collect from orders where sellerid === companyid
-  const orders = [
-    {
-      id: 3,
-      date: "03.03.2023",
-      items: [
-        {
-          id: 2,
-          name: "Test 3",
-          price: 10,
-          amount: 2,
-        },
-        {
-          id: 12,
-          name: "Test 3",
-          price: 12,
-          amount: 1,
-        },
-      ],
-      buyerid: 1,
-      sellerid: 4,
-    },
-  ];
+  const [orders, setOrders] = useState([]);
+
+  async function getorders() {
+    let url = `${env.API_URL}orders?sellerId=${accountdata.account_id}`;
+
+    fetch(url, {
+      method: "Get",
+      headers: {
+        Authorization: `Bearer ${Cookies.get("auth")}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) =>
+        Array.isArray(data) ? setOrders(data) : setOrders([data])
+      );
+  }
+
+  useEffect(() => {
+    getorders();
+  });
 
   return (
     <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
       <div className="mb-5">
         <h1 className="text-xl font-bold">Product Orders</h1>
-        {orders.map((order, index) => (
-          <div key={index} className="bg-white shadow-md rounded-md p-2 mb-2">
-            <div className="flex ">
-              <p className="mr-5">
-                <span className="font-semibold">Order ID: </span>
-                <span className="font-semibold">{order.id}</span>
-              </p>
-              <p className="mr-5">
-                <span className="font-semibold">Order Date: </span>
-                <span className="font-semibold">{order.date}</span>
-              </p>
-              <p className="mr-5">
-                <span className="font-semibold">Amount of Items: </span>
-                <span className="font-semibold">{order.items.length}</span>
-              </p>
-              <p className="mr-5">
-                <span className="font-semibold">Total Costs: </span>
-                <span className="text-red-500 font-semibold">
-                  -
-                  {order.items.reduce(
-                    (total, item) => total + item.price * item.amount,
-                    0
-                  )}
-                  €
-                </span>
-              </p>
-            </div>
-            {order.items.map((item) => (
-              <div>
-                <p>
-                  <span className="mr-5">Product Name: {item.name}</span>
-                  <span className="mr-5">Cost per Item: {item.price}€</span>
-                  <span className="mr-5">Amount: {item.amount}</span>
+        {orders.map((order, index) => {
+          let date = new Date(order.date);
+          let formattedDate = date.toISOString().substring(0, 10);
+          return (
+            <div key={index} className="bg-white shadow-md rounded-md p-2 mb-2">
+              <div className="flex ">
+                <p className="mr-5">
+                  <span className="font-semibold">Order ID: </span>
+                  <span className="font-semibold">{order.id}</span>
+                </p>
+                <p className="mr-5">
+                  <span className="font-semibold">Order Date: </span>
+                  <span className="font-semibold">{formattedDate}</span>
+                </p>
+                <p className="mr-5">
+                  <span className="font-semibold">Amount of Items: </span>
+                  <span className="font-semibold">{order.items.length}</span>
+                </p>
+                <p className="mr-5">
+                  <span className="font-semibold">Total Costs: </span>
+                  <span className="text-green-500 font-semibold">
+                    +
+                    {order.items.reduce(
+                      (total, item) => total + item.price * item.amount,
+                      0
+                    )}
+                    €
+                  </span>
                 </p>
               </div>
-            ))}
-          </div>
-        ))}
+              {order.items.map((item) => (
+                <div>
+                  <p>
+                    <span className="mr-5">Product Name: {item.name}</span>
+                    <span className="mr-5">Cost per Item: {item.price}€</span>
+                    <span className="mr-5">Amount: {item.amount}</span>
+                  </p>
+                </div>
+              ))}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 }
 
 export function Payments() {
-  const payments = [
-    {
-      provider: "Visa",
-      card_number: 5790,
-      card_holder_name: "Bobby Business",
-      expires: "Jun/2031",
-    },
-    {
-      provider: "Mastercard",
-      card_number: 5081,
-      card_holder_name: "Bobby Business Mastercard",
-      expires: "Jul/2029",
-    },
-  ];
-  // collect from orders where buyerid or sellerid === companyid
-  const orders = [
-    {
-      id: 1,
-      date: "01.01.2023",
-      items: [
-        {
-          id: 2,
-          name: "Test",
-          price: 10,
-        },
-        {
-          id: 2,
-          name: "Test",
-          price: 12,
-        },
-        {
-          id: 2,
-          name: "Test",
-          price: 13,
-        },
-      ],
-      buyerid: 4,
-      sellerid: 1,
-    },
-    {
-      id: 2,
-      date: "02.02.2023",
-      items: [
-        {
-          id: 2,
-          name: "Test 2",
-          price: 10,
-        },
-      ],
-      buyerid: 4,
-      sellerid: 1,
-    },
-    {
-      id: 3,
-      date: "03.03.2023",
-      items: [
-        {
-          id: 2,
-          name: "Test 3",
-          price: 10,
-        },
-        {
-          id: 2,
-          name: "Test 3",
-          price: 12,
-        },
-      ],
-      buyerid: 1,
-      sellerid: 4,
-    },
-  ];
+  const [payments, setPayments] = useState([]);
+
+  const [orders, setOrders] = useState([]);
+
+  async function getorders() {
+    let url = `${env.API_URL}orders?buyerId=${accountdata.account_id}&sellerId=${accountdata.account_id}`;
+
+    fetch(url, {
+      method: "Get",
+      headers: {
+        Authorization: `Bearer ${Cookies.get("auth")}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) =>
+        Array.isArray(data) ? setOrders(data) : setOrders([data])
+      );
+  }
+
+  async function getpayments() {
+    let url = `${env.API_URL}payments`;
+
+    fetch(url, {
+      method: "Get",
+      headers: {
+        Authorization: `Bearer ${Cookies.get("auth")}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) =>
+        Array.isArray(data) ? setPayments(data) : setPayments([data])
+      );
+  }
+
+  useEffect(() => {
+    getorders();
+    getpayments();
+  }, []);
 
   return (
     <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
@@ -579,46 +536,130 @@ export function Payments() {
           </button>
         </div>
         <h1 className="text-xl font-bold mb-5">Billings</h1>
-        {orders.map((order, index) => (
-          <div key={index} className="bg-white shadow-md rounded-md p-2 mb-2">
-            <div className="flex ">
-              <p className="mr-5">
-                <span className="font-semibold">Order ID: </span>
-                {order.id}{" "}
-              </p>
-              <p className="mr-5">
-                <span className="font-semibold">Order Date: </span>
-                {order.date}{" "}
-              </p>
-              <p className="mr-5">
-                <span className="font-semibold">Amount of Items: </span>
-                {order.items.length}{" "}
-              </p>
-              <p className="mr-5">
-                <span className="font-semibold">Costs: </span>
-                <span
-                  className={
-                    order.buyerid === 4 ? "text-red-500" : "text-green-500"
-                  }
-                >
-                  {order.buyerid === 4 ? "-" : "+"}
-                  {order.items.reduce((total, item) => total + item.price, 0)}€
-                </span>{" "}
-              </p>
+        {orders.map((order, index) => {
+          let date = new Date(order.date);
+          let formattedDate = date.toISOString().substring(0, 10);
+          return (
+            <div key={index} className="bg-white shadow-md rounded-md p-2 mb-2">
+              <div className="flex ">
+                <p className="mr-5">
+                  <span className="font-semibold">Order ID: </span>
+                  {order.id}{" "}
+                </p>
+                <p className="mr-5">
+                  <span className="font-semibold">Order Date: </span>
+                  {formattedDate}{" "}
+                </p>
+                <p className="mr-5">
+                  <span className="font-semibold">Amount of Items: </span>
+                  {order.items.length}{" "}
+                </p>
+                <p className="mr-5">
+                  <span className="font-semibold">Costs: </span>
+                  <span
+                    className={
+                      order.buyerId === 4 ? "text-red-500" : "text-green-500"
+                    }
+                  >
+                    {order.buyerId === 4 ? "-" : "+"}
+                    {order.items.reduce((total, item) => total + item.price, 0)}
+                    €
+                  </span>{" "}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
 }
 
 export function CustomerSupport() {
+  const chat_metadata = {
+    customer_id: 3,
+    customer_name: "Test Customer A",
+    product_id: 1,
+    product_name: "Test Product",
+  };
+
+  const messages = [
+    {
+      senderid: 3,
+      reciverid: 1,
+      message: "Hallo Ich habe ein Problem",
+      timestamp: "2023-11-19T21:09:16Z",
+    },
+    {
+      senderid: 1,
+      reciverid: 3,
+      message: "Was für ein Problem haben sie denn?",
+      timestamp: "2023-11-19T21:09:16Z",
+    },
+    {
+      senderid: 3,
+      reciverid: 1,
+      message:
+        "Mein Monitor funktioniert nicht mehr, nach dem ich ihn aus dem 3. Stock geworfen habe",
+      timestamp: "2023-11-19T21:09:16Z",
+    },
+    {
+      senderid: 1,
+      reciverid: 3,
+      message: "Da können wir leider nichts machen das ist ihre eigene schuld ",
+      timestamp: "2023-11-19T21:09:16Z",
+    },
+  ];
+
   return (
-    <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
+    <div className="flex flex-col w-3/4 h-2/3 bg-white rounded-md shadow-xl p-5">
       <div className="mb-5">
         <h1 className="text-xl font-bold">Customer Support</h1>
       </div>
+      <div id="chat-window" className="flex flex-grow">
+        <div className="w-1/3 h-full border-2 border-gray-400 rounded-l-md">
+          <h1 className="p-2 font-semibold border-gray-300 border-b-2">
+            Customer Contacts
+          </h1>
+        </div>
+        <div className="p-5 w-2/3 h-full border-y-2 border-r-2 border-gray-400 rounded-r-md">
+          <div className="w-full h-18 mb-5 border-b-2 border-gray-300">
+            <h1 className="text-lg font-semibold">
+              {chat_metadata.customer_name}
+            </h1>
+            <h3 className="pb-5 text-md">{chat_metadata.product_name}</h3>
+          </div>
+  
+          <div className="w-full">
+            {messages.map((message) => (
+              <div
+                key={message.timestamp}
+                className={`flex mb-2 ${
+                  message.senderid === 1 ? "justify-end" : "justify-start"
+                }`}
+              >
+                <div
+                  className={`px-2 py-1 min-w-48 max-w-2/5 bg-gray-500 ${
+                    message.senderid === 1
+                      ? "rounded-l-lg rounded-br-lg"
+                      : "rounded-r-lg rounded-bl-lg"
+                  }`}
+                >
+                  {message.message}
+                  <span
+                    className={`flex ${
+                      message.senderid === 1 ? "justify-start" : "justify-end"
+                    } text-xs`}
+                  >
+                    {new Date(message.timestamp).toLocaleTimeString()}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
+  
 }

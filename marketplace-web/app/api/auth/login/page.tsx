@@ -44,7 +44,7 @@ export default function Page() {
       console.log("Unauthorized");
       handlePopupInfo("warning", "Email Adress or Password incorrect", 1);
     } else {
-      useCreate(data.access_token, isAuthenticated);
+      useCreate(data.access_token);
       window.location.href = "/";
       handlePopupInfo("check", "Successfully Loged In", 2);
     }

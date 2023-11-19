@@ -7,13 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Orders {
-  id    Int      @id @default(autoincrement())
-  account  Int
-  date  DateTime
-  items Json[]
-}
-
 model Products {
   id            Int    @id @default(autoincrement())
   name          String
@@ -44,15 +37,34 @@ model Accounts {
   // Only Business Accounts
   company_name  String?                               // Company Name
   company_type  String?                               // Company Type (AG, GmbH ...)
-  owned_items   Json[]                                // Owned Items (Online, Offline, Instock or Out of Stock every thing)
 }
 
 model Payments {
-  id                        BigInt   @id @default(autoincrement())
+  id                        Int   @id @default(autoincrement())
   provider                  String
-  card_number               BigInt
+  card_number               Int
   cvc                       Int
   card_holder_name          String
+  card_holder_id            Int
   expires                   String
 }
+
+model Orders {
+  id       Int      @id @default(autoincrement())
+  date     DateTime
+  buyerId  Int
+  sellerId Int
+  items    Items[]
+}
+
+model Items {
+  id     Int    @id @default(autoincrement())
+  productid Int
+  name   String
+  price  Float
+  amount Int
+  Order  Orders  @relation(fields: [orderId], references: [id])
+  orderId Int
+}
+
 

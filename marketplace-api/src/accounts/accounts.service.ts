@@ -10,17 +10,6 @@ interface Password {
 export class AccountsService {
   constructor(private prisma: PrismaService) {}
 
-  async getpassword({
-    accountsWhereUniqueInput,
-  }: {
-    accountsWhereUniqueInput: Prisma.AccountsWhereUniqueInput;
-  }): Promise<Password | null> {
-    return this.prisma.accounts.findUnique({
-      where: accountsWhereUniqueInput,
-      select: { password: true}
-    });
-  }
-
   async getaccounts({
     accountsWhereUniqueInput,
   }: {

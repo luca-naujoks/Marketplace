@@ -22,8 +22,8 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const private_payload = { id: user.id, first_name: user.first_name, last_name: user.last_name, adress: user.adress, zip: user.zip, email: user.email, type: user.type };
-    const business_payload = { company_id: user.id, company_name: user.company_name, company_type: user.company_type ,first_name: user.first_name, last_name: user.last_name, adress: user.adress, zip: user.zip, email: user.email, type: user.type }
+    const private_payload = { account_id: user.id, first_name: user.first_name, last_name: user.last_name, adress: user.adress, zip: user.zip, email: user.email, type: user.type };
+    const business_payload = { account_id: user.id, company_name: user.company_name, company_type: user.company_type ,first_name: user.first_name, last_name: user.last_name, adress: user.adress, zip: user.zip, email: user.email, type: user.type }
     
     if (user.type === "private") {
       return { access_token: this.jwtService.sign(private_payload)}

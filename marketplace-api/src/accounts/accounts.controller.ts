@@ -173,14 +173,6 @@ export class AccountsController {
     });
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('password/:id')
-  async getAccountPassword(@Param('id') id: string): Promise<Password> {
-    return this.AccountsService.getpassword({
-      accountsWhereUniqueInput: { id: Number(id) },
-    });
-  }
-
   @Post('forgot-password')
   async forgotpassword(
     @Body()

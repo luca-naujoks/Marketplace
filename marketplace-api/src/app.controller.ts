@@ -20,4 +20,11 @@ export class AppController {
       statusCode: 200
     };
   }
+
+  @Post('test')
+  async test() {
+    return {
+      message: "successful test"
+    };
+  }
 }
