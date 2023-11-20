@@ -613,52 +613,54 @@ export function CustomerSupport() {
 
   return (
     <div className="flex flex-col w-3/4 h-2/3 bg-white rounded-md shadow-xl p-5">
+
+
       <div className="mb-5">
-        <h1 className="text-xl font-bold">Customer Support</h1>
+      <h1 className="text-xl font-bold">Customer Support</h1>
+    </div>
+    <div id="chat-window" className="flex flex-grow">
+      <div className="w-1/3 h-full border-2 border-gray-400 rounded-l-md">
+        <h1 className="p-2 font-semibold border-gray-300 border-b-2">
+          Customer Contacts
+        </h1>
       </div>
-      <div id="chat-window" className="flex flex-grow">
-        <div className="w-1/3 h-full border-2 border-gray-400 rounded-l-md">
-          <h1 className="p-2 font-semibold border-gray-300 border-b-2">
-            Customer Contacts
+      <div className="p-5 w-2/3 h-full border-y-2 border-r-2 border-gray-400 rounded-r-md">
+        <div className="w-full h-18 mb-5 border-b-2 border-gray-300">
+          <h1 className="text-lg font-semibold">
+            {chat_metadata.customer_name}
           </h1>
+          <h3 className="pb-5 text-md">{chat_metadata.product_name}</h3>
         </div>
-        <div className="p-5 w-2/3 h-full border-y-2 border-r-2 border-gray-400 rounded-r-md">
-          <div className="w-full h-18 mb-5 border-b-2 border-gray-300">
-            <h1 className="text-lg font-semibold">
-              {chat_metadata.customer_name}
-            </h1>
-            <h3 className="pb-5 text-md">{chat_metadata.product_name}</h3>
-          </div>
-  
-          <div className="w-full">
-            {messages.map((message) => (
+
+        <div className="w-full">
+          {messages.map((message) => (
+            <div
+              key={message.timestamp}
+              className={`flex mb-2 ${
+                message.senderid === 1 ? "justify-end" : "justify-start"
+              }`}
+            >
               <div
-                key={message.timestamp}
-                className={`flex mb-2 ${
-                  message.senderid === 1 ? "justify-end" : "justify-start"
+                className={`px-2 py-1 min-w-48 max-w-2/5 ${
+                  message.senderid === 1
+                    ? "rounded-l-lg rounded-br-lg bg-green-800"
+                    : "rounded-r-lg rounded-bl-lg bg-gray-500"
                 }`}
               >
-                <div
-                  className={`px-2 py-1 min-w-48 max-w-2/5 bg-gray-500 ${
-                    message.senderid === 1
-                      ? "rounded-l-lg rounded-br-lg"
-                      : "rounded-r-lg rounded-bl-lg"
-                  }`}
+                {message.message}
+                <span
+                  className={`flex ${
+                    message.senderid === 1 ? "justify-start" : "justify-end"
+                  } text-xs`}
                 >
-                  {message.message}
-                  <span
-                    className={`flex ${
-                      message.senderid === 1 ? "justify-start" : "justify-end"
-                    } text-xs`}
-                  >
-                    {new Date(message.timestamp).toLocaleTimeString()}
-                  </span>
-                </div>
+                  {new Date(message.timestamp).toLocaleTimeString()}
+                </span>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
+    </div>
     </div>
   );
   
