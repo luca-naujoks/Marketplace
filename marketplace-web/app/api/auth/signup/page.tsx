@@ -75,7 +75,7 @@ export default function Page() {
       );
     } else {
       handlePopupInfo("check", "New Account Successfully Created", 2);
-      useCreate(data.access_token, isAuthenticated);
+      useCreate(data.access_token);
       setTimeout((window.location.href = "/"), 3000);
       
     }
@@ -204,7 +204,7 @@ export default function Page() {
             id="AGB_Checkbox"
             required
           />{" "}
-          <label>Accept our AGBs</label>
+          <label htmlFor="AGB_Checkbox" className="hover:cursor-pointer">Accept our AGBs</label>
           <button
             className="w-full bg-blue-500 text-white p-3 rounded-md"
             type="submit"

@@ -7,6 +7,5 @@ export class CreateOrderDto {
       readonly amount: number;
     }[];
     readonly buyerId: number;
-    readonly sellerId: number;
   }
   

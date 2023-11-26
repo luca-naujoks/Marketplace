@@ -1,7 +1,7 @@
 // OrdersService
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { Orders, Prisma } from '@prisma/client';
+import { Orders, Items, Products } from '@prisma/client';
 import { CreateOrderDto } from './create-order.dto';
 
 @Injectable()
@@ -25,28 +25,61 @@ export class OrdersService {
     return createdOrder;
   }
 
-  async findOrders(buyerId: string, sellerId: string): Promise<Orders[]> {
-    let where: Prisma.OrdersWhereInput = {};
-  
-    if (buyerId && sellerId) {
-      where = {
-        OR: [
-          { buyerId: parseInt(buyerId) },
-          { sellerId: parseInt(sellerId) },
-        ],
-      };
-    } else if (buyerId) {
-      where.buyerId = parseInt(buyerId);
-    } else if (sellerId) {
-      where.sellerId = parseInt(sellerId);
-    }
-  
-    return this.prisma.orders.findMany({
-      where,
-      include: {
-        items: true,
-      },
-    });
+  async findOwnOrders(): Promise<Orders[]> {
+    
+    return
   }
+
+  async getMyOrders(account_id: number): Promise<Orders[]> {
+    return this.prisma.orders.findMany({
+      where: {buyerId: account_id},
+      include: {items: true},
+    })
+  }
+
+  async getBusinessOrders(account_id: number): Promise<any[]>{
+    const products = await this.prisma.products.findMany({
+      where: {
+        brand_id: account_id
+      },
+    })
+
+    const productIds = products.map(product => product.id);
+
+    const items = await this.prisma.items.findMany({
+      where: {
+        productid: {
+          in: productIds,
+        }
+      }
+    })
+
+    const itemsWithOrderDate = await Promise.all(items.map(async (item) => {
+      const order = await this.prisma.orders.findUnique({
+        where: {
+          id: item.orderId
+        }
+      })
+
+      const formattedDate = order.date.toISOString().split('T')[0];
+
+      return {
+        ...item,
+        orderDate: formattedDate
+      }
+    }))
+
+    return itemsWithOrderDate;
+}
+
+async getBusinessBillings(account_id: number): Promise<any[]>{
+let billings = []
+
+await this.prisma.items.findMany
+
+  return;
+}
+
+
   
 }

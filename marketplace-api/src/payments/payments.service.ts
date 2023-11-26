@@ -10,8 +10,17 @@ export class PaymentsService {
     return this.prisma.payments.findMany({
       where: {
         card_holder_id: account_id
+      },
+      select: {
+        provider: true,
+        card_number: true,
+        card_holder_name: true,
+        expires: true
       }
-    })
+    }).then(payments => payments.map(payment => ({
+      ...payment,
+      card_number: String(payment.card_number).slice(8)
+    })));
   }
 
   async create(accountId: number, createPaymentDto: CreatePaymentDto) {

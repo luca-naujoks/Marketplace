@@ -20,7 +20,7 @@ model Products {
   brand_id      Int
   special_sale  Int
   tags          Json[]
-  status        String @default("non-listed")
+  listed        Boolean
 }
 
 model Accounts {

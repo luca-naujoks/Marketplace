@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Request } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './create-order.dto';
 import { UseGuards } from '@nestjs/common';
@@ -16,7 +16,13 @@ export class OrdersController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findOrders(@Query('buyerId') buyerId: string, @Query('sellerId') sellerId: string) {
-    return this.ordersService.findOrders(buyerId, sellerId);
+  findOrders(@Request() req) {
+    return this.ordersService.getMyOrders(parseInt(req.user.account_id));
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('business')
+  findBusinessOrders(@Request() req) {
+    return this.ordersService.getBusinessOrders(parseInt(req.user.account_id));
   }
 }

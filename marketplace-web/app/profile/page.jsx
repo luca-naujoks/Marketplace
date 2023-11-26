@@ -12,6 +12,7 @@ import {
 import {
   PersonalData,
   MarketplacePrime,
+  PrivatePayments,
   Orders,
   Subscriptions
 } from "../../components/private.component"
@@ -104,7 +105,7 @@ export default function Page() {
                   <PersonalData />
                 </div>}
                 {selectedSection === "Payments" && <div className="flex flex-col w-full h-full items-center">
-                  <Payments />
+                  <PrivatePayments />
                 </div>}
             {selectedSection === "Prime Card" && <div className="flex flex-col w-full h-full items-center">
                   <MarketplacePrime />
@@ -162,7 +163,7 @@ export default function Page() {
                         : "text-gray-600"
                     }`}
                   >
-                    Company Orders
+                    Own Orders
                   </a>
                 </li>
                 <li className="m-2">

@@ -27,17 +27,16 @@ export function useSession() {
 }
 
 export function useCreate(tokenObject: string) {
-
-  
-
   if (ClientCookies.get('auth') !== undefined) {
     console.log("auth " + tokenObject)
     ClientCookies.remove('auth')
-    ClientCookies.set('auth', tokenObject)
   }
-  ClientCookies.set('auth', tokenObject)
+  var expiryDate = new Date();
+  expiryDate.setDate(expiryDate.getDate() + 7);
+  ClientCookies.set('auth', tokenObject, { expires: expiryDate })
   console.log(tokenObject)
 }
+
 
 export function useLogout(isAuthenticated: boolean) {
   if (isAuthenticated) {
