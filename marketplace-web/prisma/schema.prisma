@@ -53,17 +53,15 @@ model Orders {
   id       Int      @id @default(autoincrement())
   date     DateTime
   buyerId  Int
-  sellerId Int
   items    Items[]
 }
 
 model Items {
   id     Int    @id @default(autoincrement())
+  productid Int
   name   String
   price  Float
   amount Int
   Order  Orders  @relation(fields: [orderId], references: [id])
   orderId Int
 }
-
-

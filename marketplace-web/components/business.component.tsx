@@ -197,7 +197,6 @@ export function CompanyData() {
 export function OwnedProducts() {
   const [items, setItems] = useState([]);
   const [start, setStart] = useState(0);
-  const [state, setState] = useState(true);
 
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
@@ -207,6 +206,13 @@ export function OwnedProducts() {
   const [stock, setStock] = useState("");
   const [discount, setDiscount] = useState("");
   const [Tags, setTags] = useState([]);
+
+  const displayItems = items.slice(start, start + 3);
+  const listedItems = items.filter((item) => item.listed === true);
+  const nonlistedItems = items.filter((item) => item.listed === false);
+  const [productView, setProductView] = useState(false);
+  const [createMode, setCreateMode] = useState(false);
+  const [isReadOnly, setIsReadOnly] = useState(true);
 
   async function getproducts() {
     let url = `${env.API_URL}products/business?brandid=${accountdata.account_id}`;
@@ -219,7 +225,28 @@ export function OwnedProducts() {
     })
       .then((response) => response.json())
       .then((data) => setItems(data));
-    console.log("catch");
+  }
+
+  async function getproduct(product_id) {
+    let url = `${env.API_URL}products/${product_id}`;
+
+    fetch(url, {
+      method: "Get",
+      headers: {
+        Authorization: `Bearer ${Cookies.get("auth")}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setProductName(data.name);
+        setDescription(data.description);
+        setType(data.type);
+        setPrice(data.price);
+        setDeliveryTime(data.delivery_time);
+        setStock(data.stock);
+        setDiscount(data.discount);
+        setTags(data.tags);
+      });
   }
 
   async function publishProduct(product_id) {
@@ -242,12 +269,25 @@ export function OwnedProducts() {
   }
 
   async function createProduct() {
-    setAddProduct(false);
+    setProductView(false);
   }
 
   async function editProduct(id) {
-    setState(false);
-    setAddProduct(true);
+    setProductView(false);
+  }
+
+  async function openProductView(createMode, id) {
+    if (createMode === true) {
+      setProductView(true);
+      setCreateMode(true);
+      console.log("create product");
+    } else {
+      setProductView(true);
+      setCreateMode(false);
+      console.log(id);
+      getproduct(id);
+      console.log("edit");
+    }
   }
 
   useEffect(() => {
@@ -262,19 +302,11 @@ export function OwnedProducts() {
     setStart((oldStart) => (oldStart === items.length - 3 ? 0 : oldStart + 1));
   };
 
-  const displayItems = items.slice(start, start + 3);
-
-  const listedItems = items.filter((item) => item.listed === true);
-
-  const nonlistedItems = items.filter((item) => item.listed === false);
-
-  const [addProduct, setAddProduct] = useState(false);
-
   return (
     <div className="flex-col w-3/4 bg-white rounded-md shadow-xl p-5">
       <div className="mb-5 h-full">
         <h1 className="text-xl font-bold mb-5">Company Owned Products</h1>
-        <div id="basic_view" className={addProduct ? "hidden" : "block"}>
+        <div id="basic_view" className={productView ? "hidden" : "block"}>
           <div className="flex">
             <div className="w-1/3 ml-2 mb-5">
               <p className="block mb-1">
@@ -318,7 +350,7 @@ export function OwnedProducts() {
                 <div
                   key={index}
                   className="p-2 border-2 rounded-md border-black cursor-pointer"
-                  onClick={() => editProduct(item.id)}
+                  onClick={() => openProductView(false, item.id)}
                 >
                   <label>Status: </label>
                   <label
@@ -362,7 +394,7 @@ export function OwnedProducts() {
           <div className="flex justify-end items-center mb-5">
             <button
               className="p-2 bg-gray-500 rounded-md"
-              onClick={() => setAddProduct(true)}
+              onClick={() => openProductView(true, -12321)}
             >
               Add Product
             </button>
@@ -371,7 +403,7 @@ export function OwnedProducts() {
 
         <div
           id="product_view"
-          className={!addProduct ? "hidden flex-col" : "block flex-col"}
+          className={!productView ? "hidden flex-col" : "block flex-col"}
         >
           <div id="first_layer" className="flex-col mb-5">
             <div className="flex">
@@ -384,6 +416,7 @@ export function OwnedProducts() {
                   placeholder="Enter Product Name"
                   onChange={(e) => setProductName(e.target.value)}
                   value={productName}
+                  readOnly={isReadOnly}
                 />
               </div>
               <div className="flex flex-col w-2/5 mr-4 mb-4">
@@ -395,6 +428,7 @@ export function OwnedProducts() {
                   placeholder="Enter Product Description"
                   onChange={(e) => setDescription(e.target.value)}
                   value={description}
+                  readOnly={isReadOnly}
                 />
               </div>
             </div>
@@ -404,6 +438,8 @@ export function OwnedProducts() {
                 className="w-full border border-gray-300 rounded-md p-2 outline-none bg-transparent"
                 type="text"
                 id="product_Type"
+                value={type}
+                readOnly={isReadOnly}
               />
             </div>
           </div>
@@ -417,7 +453,8 @@ export function OwnedProducts() {
                   type="number"
                   id="product_Price"
                   onChange={(e) => setPrice(e.target.value)}
-                  value={productName}
+                  value={price}
+                  readOnly={isReadOnly}
                 />
               </div>
               <div className="flex flex-col w-1/5 mb-4">
@@ -429,6 +466,7 @@ export function OwnedProducts() {
                   placeholder="Average Delivery Time"
                   onChange={(e) => setDeliveryTime(e.target.value)}
                   value={deliveryTime}
+                  readOnly={isReadOnly}
                 />
               </div>
             </div>
@@ -440,6 +478,7 @@ export function OwnedProducts() {
                 id="product_Stock"
                 onChange={(e) => setStock(e.target.value)}
                 value={stock}
+                readOnly={isReadOnly}
               />
             </div>
           </div>
@@ -454,15 +493,18 @@ export function OwnedProducts() {
                 placeholder="1-100"
                 onChange={(e) => setDiscount(e.target.value)}
                 value={discount}
+                readOnly={isReadOnly}
               />
             </div>
-            <div className="flex flex-col w-2/5 mr-4 mb-4">
+            <div className="flex flex-col w-full mb-4">
               <p className="block mb-1">Tags</p>
               <input
                 className="w-full border border-gray-300 rounded-md p-2 outline-none bg-transparent"
                 type="text"
                 id="product_Tags"
                 placeholder="Enter Product Description"
+                value={Tags}
+                readOnly={isReadOnly}
               />
             </div>
           </div>
@@ -472,7 +514,7 @@ export function OwnedProducts() {
               <button
                 className="w-full border border-gray-300 rounded-md p-2 bg-transparent hover:bg-slate-300 duration-300 hover:text-green-500"
                 type="button"
-                onClick={() => createProduct()}
+                onClick={createMode ? createProduct : editProduct}
               >
                 OK
               </button>
@@ -481,7 +523,7 @@ export function OwnedProducts() {
               <button
                 className="w-full border border-gray-300 rounded-md p-2 bg-transparent hover:bg-slate-300 duration-300 hover:text-red-500"
                 type="button"
-                onClick={() => setAddProduct(false)}
+                onClick={() => setProductView(false)}
               >
                 Cancel
               </button>
@@ -563,15 +605,33 @@ export function CompanyOrders() {
                     </span>
                   </p>
                 </div>
-                {order.items.map((item) => (
-                  <div>
-                    <p>
-                      <span className="mr-5">Product Name: {item.name}</span>{" "}
-                      <span className="mr-5">Cost per Item: {item.price}€</span>
-                      <span className="mr-5">Amount: {item.amount}</span>
-                    </p>
-                  </div>
-                ))}
+                {order.items.map((item) => {
+                  const truncatedName =
+                    item.name.length > 30
+                      ? item.name.substring(0, 30) + "..."
+                      : item.name;
+                  return (
+                    <div>
+                      <p>
+                        <span className="mr-5">
+                          <span className="font-semibold">Product Name:</span>
+                          <span> {truncatedName}</span>
+                        </span>
+                        <span className="mr-5">
+                          <span className="font-semibold">
+                            {" "}
+                            Cost per Item:{" "}
+                          </span>
+                          <span>{item.price}€</span>
+                        </span>
+                        <span className="mr-5">
+                          <span className="font-semibold">Amount: </span>
+                          <span>{item.amount}</span>
+                        </span>
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
             );
           })
@@ -640,7 +700,7 @@ export function ProductOrders() {
                   <p className="mr-5">
                     <span className="font-semibold">Turnover: </span>
                     <span className="text-green-500 font-semibold">
-                      +{item.amount * item.price} $
+                      {item.amount * item.price} $
                     </span>
                   </p>
                 </div>
@@ -656,10 +716,13 @@ export function ProductOrders() {
 export function Payments() {
   const [payments, setPayments] = useState([]);
 
-  const [billings, setBillings] = useState([]);
+  const [billings, setBillings] = useState({
+    companySoldItems: [],
+    companyOrders: [],
+  });
 
   async function getorders() {
-    let url = `${env.API_URL}orders?buyerId=${accountdata.account_id}&sellerId=${accountdata.account_id}`;
+    let url = `${env.API_URL}orders/business/billings`;
 
     fetch(url, {
       method: "Get",
@@ -668,9 +731,7 @@ export function Payments() {
       },
     })
       .then((response) => response.json())
-      .then((data) =>
-        Array.isArray(data) ? setBillings(data) : setBillings([data])
-      );
+      .then((data) => setBillings(data));
   }
 
   async function getpayments() {
@@ -725,9 +786,10 @@ export function Payments() {
             Add payment
           </button>
         </div>
-        
+
         <h1 className="text-xl font-bold mb-5">Billings</h1>
-        {billings.length > 0 ? (
+        {billings.companySoldItems.length < 0 ||
+        billings.companyOrders.length < 0 ? (
           <div key="0" className="bg-white shadow-md rounded-md p-2 mb-2">
             <div className="flex ">
               <p className="mr-5">
@@ -738,40 +800,103 @@ export function Payments() {
             </div>
           </div>
         ) : (
-          billings.map((item, index) => {
-            return (
+          <div>
+            {billings.companySoldItems.map((item, index) => (
               <div
                 key={index}
                 className="bg-white shadow-md rounded-md p-2 mb-2"
               >
                 <div className="flex ">
                   <p className="mr-5">
-                    <span className="font-semibold">Order ID: </span>
-                    <span className="font-semibold">{item.id}</span>
+                    <span className="font-semibold">Item ID: </span>
+                    <span className="font-semibold">{item.productid}</span>
                   </p>
                   <p className="mr-5">
                     <span className="font-semibold">Order Date: </span>
-                    <span className="font-semibold">{item.date}</span>
+                    <span className="font-semibold">{item.orderDate}</span>
                   </p>
                   <p className="mr-5">
                     <span className="font-semibold">Amount of Items: </span>
-                    <span className="font-semibold">{item.items.length}</span>
+                    <span className="font-semibold">{item.amount}</span>
                   </p>
                   <p className="mr-5">
-                    <span className="font-semibold">Total Costs: </span>
-                    <span className="text-red-500 font-semibold">
-                      -
-                      {item.items.reduce(
-                        (total, item) => total + item.price * item.amount,
-                        0
-                      )}
-                      €
+                    <span className="font-semibold">Turnover: </span>
+                    <span className="text-green-500 font-semibold">
+                      {item.amount * item.price} $
                     </span>
                   </p>
                 </div>
               </div>
-            );
-          })
+            ))}
+
+            {billings.companyOrders.map((order, index) => {
+              const formattedDate = new Date(order.date)
+                .toISOString()
+                .split("T")[0];
+
+              return (
+                <div
+                  key={index}
+                  className="bg-white shadow-md rounded-md p-2 mb-2"
+                >
+                  <div className="flex ">
+                    <p className="mr-5">
+                      <span className="font-semibold">Order ID: </span>
+                      <span className="font-semibold">{order.id}</span>
+                    </p>
+                    <p className="mr-5">
+                      <span className="font-semibold">Order Date: </span>
+                      <span className="font-semibold">{formattedDate}</span>
+                    </p>
+                    <p className="mr-5">
+                      <span className="font-semibold">Amount of Items: </span>
+                      <span className="font-semibold">
+                        {order.items.length}
+                      </span>
+                    </p>
+                    <p className="mr-5">
+                      <span className="font-semibold">Total Costs: </span>
+                      <span className="text-red-500 font-semibold">
+                        -
+                        {order.items.reduce(
+                          (total, item) => total + item.price * item.amount,
+                          0
+                        )}
+                        €
+                      </span>
+                    </p>
+                  </div>
+                  {order.items.map((item) => {
+                    const truncatedName =
+                      item.name.length > 30
+                        ? item.name.substring(0, 30) + "..."
+                        : item.name;
+                    return (
+                      <div>
+                        <p>
+                          <span className="mr-5">
+                            <span className="font-semibold">Product Name:</span>
+                            <span> {truncatedName}</span>
+                          </span>
+                          <span className="mr-5">
+                            <span className="font-semibold">
+                              {" "}
+                              Cost per Item:{" "}
+                            </span>
+                            <span>{item.price}€</span>
+                          </span>
+                          <span className="mr-5">
+                            <span className="font-semibold">Amount: </span>
+                            <span>{item.amount}</span>
+                          </span>
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
     </div>
